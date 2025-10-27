@@ -1,0 +1,237 @@
+# Real Estate API - Image CRUD Operations Tests
+
+## ===========================================
+## CLOUDINARY IMAGE OPERATIONS CRUD TESTS
+## ===========================================
+
+### Variables
+@baseUrl = http://localhost:5179/api
+@imageUrl = {{baseUrl}}/Image
+
+### 1. Upload Single Image - READY TO TEST
+POST {{imageUrl}}/upload?folder=real-estate/properties
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="test-house.jpg"
+Content-Type: image/jpeg
+
+< ./test-house.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### 2. Upload Multiple Images
+POST {{imageUrl}}/upload-multiple?folder=real-estate/properties
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="files"; filename="house1.jpg"
+Content-Type: image/jpeg
+
+< ./sample-images/house1.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="files"; filename="house2.jpg"
+Content-Type: image/jpeg
+
+< ./sample-images/house2.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### 3. Generate Optimized Image URL
+GET {{imageUrl}}/url/sample-public-id
+?width=800
+&height=600
+&format=webp
+
+### 4. Get Responsive Image URLs
+GET {{imageUrl}}/responsive/sample-public-id
+
+### 5. Delete Image
+DELETE {{imageUrl}}/sample-public-id
+
+## ===========================================
+## PROPERTY WITH IMAGES CRUD TESTS
+## ===========================================
+
+### 6. Create Property with Image URL (from Cloudinary)
+POST {{baseUrl}}/Property
+Content-Type: application/json
+
+{
+  "name": "Casa Moderna con Imágenes",
+  "address": "Carrera 15 #92-45, Zona Rosa",
+  "price": 750000000,
+  "idOwner": "64a1b2c3d4e5f6789012345",
+  "codigoInternal": "PROP_IMG_001",
+  "year": 2023,
+  "image": "https://res.cloudinary.com/your-cloud/image/upload/v1234567890/real-estate/properties/house_sample.jpg",
+  "city": "Bogotá",
+  "state": "Cundinamarca",
+  "country": "Colombia"
+}
+
+### 7. Get Property with Image Details
+GET {{baseUrl}}/Property/64a1b2c3d4e5f6789012999
+
+### 8. Update Property Image
+PUT {{baseUrl}}/Property/64a1b2c3d4e5f6789012999
+Content-Type: application/json
+
+{
+  "image": "https://res.cloudinary.com/your-cloud/image/upload/v1234567890/real-estate/properties/updated_house.jpg"
+}
+
+## ===========================================
+## OWNER CRUD OPERATIONS
+## ===========================================
+
+### 9. Create Owner
+POST {{baseUrl}}/Owner
+Content-Type: application/json
+
+{
+  "name": "María Elena",
+  "lastName": "Rodríguez Silva",
+  "phone": "+57 301 555 7890",
+  "email": "maria.rodriguez@email.com",
+  "birthday": "1978-03-22T00:00:00Z"
+}
+
+### 10. Get All Owners
+GET {{baseUrl}}/Owner
+
+### 11. Search Owner by Name
+GET {{baseUrl}}/Owner/search?name=María
+
+## ===========================================
+## PROPERTY ADVANCED FILTERS
+## ===========================================
+
+### 12. Search Properties with Filters
+GET {{baseUrl}}/Property
+?name=casa
+&minPrice=500000000
+&maxPrice=800000000
+&city=bogotá
+&page=1
+&pageSize=5
+&sortBy=price
+&sortDirection=desc
+
+### 13. Get Properties by Price Range
+GET {{baseUrl}}/Property/price-range
+?minPrice=600000000
+&maxPrice=900000000
+
+### 14. Get Properties by Owner
+GET {{baseUrl}}/Property/owner/64a1b2c3d4e5f6789012345
+
+## ===========================================
+## COMPLETE WORKFLOW TEST
+## ===========================================
+
+### 15. Complete Workflow: Owner → Property → Images
+# Step 1: Create Owner
+POST {{baseUrl}}/Owner
+Content-Type: application/json
+
+{
+  "name": "Carlos Alberto",
+  "lastName": "Méndez López",
+  "phone": "+57 302 888 9999",
+  "email": "carlos.mendez@email.com",
+  "birthday": "1985-07-15T00:00:00Z"
+}
+
+### 16. Create Property for the Owner
+# Use the Owner ID from step 15
+POST {{baseUrl}}/Property
+Content-Type: application/json
+
+{
+  "name": "Apartamento de Lujo con Vista",
+  "address": "Carrera 11 #93-45, Piso 25",
+  "price": 1200000000,
+  "idOwner": "OWNER_ID_FROM_STEP_15",
+  "codigoInternal": "APT_LUX_001",
+  "year": 2024,
+  "city": "Bogotá",
+  "state": "Cundinamarca",
+  "country": "Colombia"
+}
+
+### 17. Upload Image and Associate with Property
+# Step 1: Upload to Cloudinary
+POST {{imageUrl}}/upload?folder=real-estate/properties/apt-luxury
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="luxury-apt.jpg"
+Content-Type: image/jpeg
+
+< ./sample-images/luxury-apartment.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### 18. Update Property with Cloudinary Image URL
+# Use Property ID from step 16 and image URL from step 17
+PUT {{baseUrl}}/Property/PROPERTY_ID_FROM_STEP_16
+Content-Type: application/json
+
+{
+  "image": "CLOUDINARY_URL_FROM_STEP_17"
+}
+
+### 19. Verify Complete Property with All Data
+GET {{baseUrl}}/Property/PROPERTY_ID_FROM_STEP_16
+
+## ===========================================
+## ERROR HANDLING TESTS
+## ===========================================
+
+### 20. Test Invalid File Upload
+POST {{imageUrl}}/upload
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="document.pdf"
+Content-Type: application/pdf
+
+< ./test-files/invalid-file.pdf
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### 21. Test Large File Upload (should fail if > 10MB)
+POST {{imageUrl}}/upload
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="large-image.jpg"
+Content-Type: image/jpeg
+
+< ./test-files/large-image-15mb.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### 22. Test Delete Non-existent Image
+DELETE {{imageUrl}}/non-existent-public-id
+
+### 23. Test Invalid Property Creation
+POST {{baseUrl}}/Property
+Content-Type: application/json
+
+{
+  "name": "",
+  "address": "",
+  "price": -1000,
+  "idOwner": "invalid-owner-id"
+}
+
+## ===========================================
+## PERFORMANCE TESTS
+## ===========================================
+
+### 24. Bulk Property Search
+GET {{baseUrl}}/Property
+?page=1
+&pageSize=50
+&sortBy=createdAt
+&sortDirection=desc
+
+### 25. Multiple Image Sizes Generation
+GET {{imageUrl}}/responsive/sample-public-id
