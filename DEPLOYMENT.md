@@ -1,34 +1,80 @@
 <!-- @format -->
 
-# Real Estate API - Deployment Guide
+# 🚀 Real Estate API - Guía de Despliegue
 
-## Pasos para Ejecutar el Proyecto
+## 📋 Resumen del Sistema
 
-### 1. Prerrequisitos
+**API REST completa** para gestión inmobiliaria con **.NET 9**, **MongoDB** y **Cloudinary**. Sistema empresarial con gestión de propiedades, propietarios, imágenes optimizadas e historial de transacciones.
 
-- .NET 9 SDK instalado
-- Acceso a MongoDB (local o Atlas)
-- Puerto 7000-8000 disponible
+## 🛠️ Prerrequisitos de Producción
 
-### 2. Configuración Rápida
+### Infraestructura Requerida
 
-1. **Descargar y extraer el proyecto**
-2. **Navegar al directorio**
+- **Servidor**: Compatible con .NET 9 (Linux/Windows/Azure/AWS)
+- **Base de Datos**: MongoDB Atlas (recomendado) o instancia propia
+- **CDN Imágenes**: Cuenta Cloudinary configurada
+- **SSL**: Certificado HTTPS para producción
+- **Memoria**: Mínimo 2GB RAM recomendado
 
-   ```bash
-   cd BackEnd/Back-Mongo
-   ```
+### Software
 
-3. **Verificar configuración de MongoDB** en `appsettings.json`:
+- **.NET 9 Runtime** o superior
+- **Nginx/IIS** como reverse proxy (opcional)
+- **PM2** o **Systemd** para gestión de procesos (Linux)
 
-   ```json
-   {
-     "MongoDbSettings": {
-       "ConnectionString": "mongodb+srv://miguelatenciacanoles_db_user:ARCHwFxH7onJ7He8@cluster-millio.njqqpng.mongodb.net/",
-       "DatabaseName": "Million-TestDB"
-     }
-   }
-   ```
+## 🔧 Configuración de Entorno
+
+### 1. Variables de Entorno de Producción
+
+Crear archivo `.env` o configurar variables del sistema:
+
+```env
+# MongoDB Production
+MONGODB_CONNECTION_STRING=mongodb+srv://prod_user:secure_password@cluster-prod.mongodb.net/
+MONGODB_DATABASE_NAME=RealEstateProduction
+
+# Cloudinary Production
+CLOUDINARY_CLOUD_NAME=tu_production_cloud
+CLOUDINARY_API_KEY=tu_production_key
+CLOUDINARY_API_SECRET=tu_production_secret
+
+# Production Settings
+ASPNETCORE_ENVIRONMENT=Production
+ASPNETCORE_URLS=https://localhost:443;http://localhost:80
+ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
+
+# Security
+CORS_ALLOWED_ORIGINS=https://tu-frontend-production.com,https://tu-admin-panel.com
+```
+
+### 2. Configuración de Base de Datos
+
+#### MongoDB Atlas (Recomendado para Producción)
+
+```bash
+# 1. Crear cluster en MongoDB Atlas
+# 2. Configurar IP whitelist
+# 3. Crear usuario de base de datos
+# 4. Obtener connection string
+```
+
+#### Colecciones que se crean automáticamente
+
+- `Properties` - Propiedades inmobiliarias
+- `Owners` - Propietarios
+- `PropertyImages` - Gestión de imágenes
+- `PropertyTraces` - Historial de transacciones
+
+  O configurar `appsettings.json` con tus credenciales:
+
+  ```json
+  {
+    "MongoDbSettings": {
+      "ConnectionString": "mongodb+srv://YOUR_USER:YOUR_PASSWORD@YOUR_CLUSTER.mongodb.net/",
+      "DatabaseName": "YOUR_DATABASE_NAME"
+    }
+  }
+  ```
 
 4. **Restaurar dependencias**
 
@@ -55,8 +101,8 @@
 
 ### 3. Acceso a la API
 
-- **Swagger UI**: http://localhost:5000 o https://localhost:7xxx
-- **API Base URL**: https://localhost:7xxx/api
+- **Swagger UI**: http://localhost:5179/swagger (HTTP) o https://localhost:7007/swagger (HTTPS)
+- **API Base URL**: http://localhost:5179/api o https://localhost:7007/api
 
 ### 4. Endpoints Principales
 
@@ -76,7 +122,7 @@ POST   /api/Owner                 # Crear propietario
 1. **Crear un propietario**:
 
    ```bash
-   curl -X POST https://localhost:7xxx/api/Owner \
+   curl -X POST https://localhost:7007/api/Owner \
      -H "Content-Type: application/json" \
      -d '{
        "name": "Juan",
@@ -89,7 +135,7 @@ POST   /api/Owner                 # Crear propietario
 2. **Crear una propiedad**:
 
    ```bash
-   curl -X POST https://localhost:7xxx/api/Property \
+   curl -X POST https://localhost:7007/api/Property \
      -H "Content-Type: application/json" \
      -d '{
        "name": "Casa Moderna",
@@ -101,9 +147,16 @@ POST   /api/Owner                 # Crear propietario
      }'
    ```
 
-3. **Buscar propiedades**:
+3. **Subir imagen a la propiedad**:
+
+   ```bash
+   curl -X POST "https://localhost:7007/api/Image/property/PROPERTY_ID/upload?description=Fachada&isMain=true" \
+     -F "file=@imagen.jpg"
    ```
-   GET https://localhost:7xxx/api/Property?name=casa&minPrice=200000000&maxPrice=500000000&city=bogotá
+
+4. **Buscar propiedades**:
+   ```
+   GET https://localhost:7007/api/Property?name=casa&minPrice=200000000&maxPrice=500000000&city=bogotá
    ```
 
 ### 6. Datos de Base Incluidos

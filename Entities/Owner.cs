@@ -20,6 +20,9 @@ namespace ASP.MongoDb.API.Entities
     [BsonElement("Phone")]
     public string Phone { get; set; } = string.Empty;
 
+    [BsonElement("Photo")]
+    public string Photo { get; set; } = string.Empty;
+
     [BsonElement("Birthday")]
     public DateTime? Birthday { get; set; }
 

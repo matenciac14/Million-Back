@@ -131,6 +131,9 @@ namespace ASP.MongoDb.API.Controllers
         if (updateDto.Phone != null)
           existingOwner.Phone = updateDto.Phone;
 
+        if (updateDto.Photo != null)
+          existingOwner.Photo = updateDto.Photo;
+
         if (updateDto.Birthday.HasValue)
           existingOwner.Birthday = updateDto.Birthday;
 
@@ -204,6 +207,7 @@ namespace ASP.MongoDb.API.Controllers
         Name = owner.Name,
         LastName = owner.LastName,
         Phone = owner.Phone,
+        Photo = owner.Photo,
         Birthday = owner.Birthday,
         Email = owner.Email,
         FullName = owner.FullName,

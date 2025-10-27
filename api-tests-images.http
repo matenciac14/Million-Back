@@ -1,11 +1,13 @@
-# Real Estate API - Image CRUD Operations Tests
+# Real Estate API - Complete CRUD Operations Tests
+# Updated with PropertyImage Management Endpoints
 
 ## ===========================================
-## CLOUDINARY IMAGE OPERATIONS CRUD TESTS
+## CLOUDINARY IMAGE OPERATIONS CRUD TESTS  
 ## ===========================================
 
 ### Variables
 @baseUrl = http://localhost:5179/api
+@httpsBaseUrl = https://localhost:7007/api
 @imageUrl = {{baseUrl}}/Image
 
 ### 1. Upload Single Image - READY TO TEST
@@ -125,10 +127,51 @@ GET {{baseUrl}}/Property/price-range
 GET {{baseUrl}}/Property/owner/64a1b2c3d4e5f6789012345
 
 ## ===========================================
-## COMPLETE WORKFLOW TEST
+## PROPERTY IMAGE MANAGEMENT ENDPOINTS - NEW! 🔥
 ## ===========================================
 
-### 15. Complete Workflow: Owner → Property → Images
+### 15. Upload Image to Specific Property
+POST {{imageUrl}}/property/PROPERTY_ID_HERE/upload?description=Fachada%20Principal&isMain=true
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="fachada.jpg"
+Content-Type: image/jpeg
+
+< ./test-house.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### 16. Upload Additional Images to Property
+POST {{imageUrl}}/property/PROPERTY_ID_HERE/upload?description=Sala%20de%20Estar
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="sala.jpg"
+Content-Type: image/jpeg
+
+< ./test-house.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### 17. Get All Images for a Property
+GET {{imageUrl}}/property/PROPERTY_ID_HERE
+
+### 18. Get All Images for a Property (Including Disabled)
+GET {{imageUrl}}/property/PROPERTY_ID_HERE?enabledOnly=false
+
+### 19. Set Main Image for Property
+PUT {{imageUrl}}/property/PROPERTY_ID_HERE/main/IMAGE_ID_HERE
+
+### 20. Get Responsive URLs for Specific Property Image
+GET {{imageUrl}}/property/PROPERTY_ID_HERE/image/IMAGE_ID_HERE/responsive
+
+### 21. Delete Specific Property Image
+DELETE {{imageUrl}}/property/PROPERTY_ID_HERE/image/IMAGE_ID_HERE
+
+## ===========================================
+## COMPLETE PROPERTY WITH MULTIPLE IMAGES WORKFLOW
+## ===========================================
+
+### 22. Complete Workflow: Owner → Property → Multiple Images
 # Step 1: Create Owner
 POST {{baseUrl}}/Owner
 Content-Type: application/json
@@ -136,13 +179,13 @@ Content-Type: application/json
 {
   "name": "Carlos Alberto",
   "lastName": "Méndez López",
-  "phone": "+57 302 888 9999",
+  "phone": "+57 302 888 9999", 
   "email": "carlos.mendez@email.com",
   "birthday": "1985-07-15T00:00:00Z"
 }
 
-### 16. Create Property for the Owner
-# Use the Owner ID from step 15
+### 23. Create Property for the Owner
+# Use the Owner ID from step 22
 POST {{baseUrl}}/Property
 Content-Type: application/json
 
@@ -150,7 +193,7 @@ Content-Type: application/json
   "name": "Apartamento de Lujo con Vista",
   "address": "Carrera 11 #93-45, Piso 25",
   "price": 1200000000,
-  "idOwner": "OWNER_ID_FROM_STEP_15",
+  "idOwner": "OWNER_ID_FROM_STEP_22",
   "codigoInternal": "APT_LUX_001",
   "year": 2024,
   "city": "Bogotá",
@@ -158,35 +201,51 @@ Content-Type: application/json
   "country": "Colombia"
 }
 
-### 17. Upload Image and Associate with Property
-# Step 1: Upload to Cloudinary
-POST {{imageUrl}}/upload?folder=real-estate/properties/apt-luxury
+### 24. Upload Main Image to Property
+# Use Property ID from step 23
+POST {{imageUrl}}/property/PROPERTY_ID_FROM_STEP_23/upload?description=Fachada%20Edificio&isMain=true
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
-Content-Disposition: form-data; name="file"; filename="luxury-apt.jpg"
+Content-Disposition: form-data; name="file"; filename="fachada-edificio.jpg"
 Content-Type: image/jpeg
 
-< ./sample-images/luxury-apartment.jpg
+< ./test-house.jpg
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
-### 18. Update Property with Cloudinary Image URL
-# Use Property ID from step 16 and image URL from step 17
-PUT {{baseUrl}}/Property/PROPERTY_ID_FROM_STEP_16
-Content-Type: application/json
+### 25. Upload Additional Images 
+POST {{imageUrl}}/property/PROPERTY_ID_FROM_STEP_23/upload?description=Sala%20con%20Vista
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
-{
-  "image": "CLOUDINARY_URL_FROM_STEP_17"
-}
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="sala-vista.jpg"
+Content-Type: image/jpeg
 
-### 19. Verify Complete Property with All Data
-GET {{baseUrl}}/Property/PROPERTY_ID_FROM_STEP_16
+< ./test-house.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### 26. Upload Third Image
+POST {{imageUrl}}/property/PROPERTY_ID_FROM_STEP_23/upload?description=Habitación%20Principal
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="habitacion.jpg"
+Content-Type: image/jpeg
+
+< ./test-house.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### 27. Verify Property with All Images
+GET {{baseUrl}}/Property/PROPERTY_ID_FROM_STEP_23
+
+### 28. Get All Property Images with Responsive URLs
+GET {{imageUrl}}/property/PROPERTY_ID_FROM_STEP_23
 
 ## ===========================================
 ## ERROR HANDLING TESTS
 ## ===========================================
 
-### 20. Test Invalid File Upload
+### 29. Test Invalid File Upload
 POST {{imageUrl}}/upload
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
@@ -197,7 +256,7 @@ Content-Type: application/pdf
 < ./test-files/invalid-file.pdf
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
-### 21. Test Large File Upload (should fail if > 10MB)
+### 30. Test Large File Upload (should fail if > 10MB)
 POST {{imageUrl}}/upload
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
@@ -208,10 +267,21 @@ Content-Type: image/jpeg
 < ./test-files/large-image-15mb.jpg
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
-### 22. Test Delete Non-existent Image
+### 31. Test Delete Non-existent Image
 DELETE {{imageUrl}}/non-existent-public-id
 
-### 23. Test Invalid Property Creation
+### 32. Test Property Image Upload to Non-existent Property
+POST {{imageUrl}}/property/000000000000000000000000/upload?description=Test
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="test.jpg"
+Content-Type: image/jpeg
+
+< ./test-house.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### 33. Test Invalid Property Creation
 POST {{baseUrl}}/Property
 Content-Type: application/json
 
@@ -226,12 +296,22 @@ Content-Type: application/json
 ## PERFORMANCE TESTS
 ## ===========================================
 
-### 24. Bulk Property Search
+### 34. Bulk Property Search
 GET {{baseUrl}}/Property
 ?page=1
 &pageSize=50
 &sortBy=createdAt
 &sortDirection=desc
 
-### 25. Multiple Image Sizes Generation
+### 35. Multiple Image Sizes Generation
 GET {{imageUrl}}/responsive/sample-public-id
+
+### 36. Property with Images Performance Test
+GET {{baseUrl}}/Property
+?minPrice=100000000
+&maxPrice=2000000000
+&page=1
+&pageSize=20
+
+### 37. Property Image Management Performance
+GET {{imageUrl}}/property/PROPERTY_ID_HERE

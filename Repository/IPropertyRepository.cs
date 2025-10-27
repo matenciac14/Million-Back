@@ -5,7 +5,7 @@ namespace ASP.MongoDb.API.Repository
 
   public interface IPropertyRepository : IRepository<Property>
   {
-    Task<PropertySearchResultDto> SearchPropertiesAsync(PropertyFilterDto filter);
+    Task<PropertySearchResultRaw> SearchPropertiesAsync(PropertyFilterDto filter);
     Task<Property?> GetPropertyWithDetailsAsync(string id);
     Task<List<Property>> GetPropertiesByOwnerAsync(string ownerId);
     Task<List<Property>> GetPropertiesByPriceRangeAsync(decimal minPrice, decimal maxPrice);

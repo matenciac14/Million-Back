@@ -292,3 +292,54 @@ test-*.jpg
 test-*.png
 test-*.gif
 *.tmp
+
+# Property test images (should not be committed)
+# These are for development/testing only - real images go to Cloudinary
+fachada-casa*.jpg
+interior-casa*.jpg
+exterior-casa*.jpg
+jardin-casa*.jpg
+bano-casa*.jpg
+cocina-casa*.jpg
+comedor-casa*.jpg
+estudio-casa*.jpg
+salon-casa*.jpg
+terraza-casa*.jpg
+habitacion-casa*.jpg
+test-house.jpg
+
+# General image exclusions for test/dev assets
+**/test-images/
+**/sample-images/
+**/dev-assets/
+
+# All image formats in root directory (development assets only)
+/*.jpg
+/*.jpeg
+/*.png
+/*.gif
+/*.webp
+/*.bmp
+/*.tiff
+/*.svg
+
+# Test scripts and HTTP files (development only - not for production)
+test-*.sh
+test-*.bash
+*.http
+api-tests*.http
+curl-tests*.sh
+load-tests*.sh
+
+# Development documentation (should not be in main branch)
+CLOUDINARY-TEST-GUIDE.md
+test-complete-system.sh
+test-simple.sh
+
+# Temporary development files
+*.http.bak
+*.temp
+*.dev
+*.local
+scratch.*
+notes.*

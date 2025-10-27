@@ -11,11 +11,19 @@ namespace ASP.MongoDb.API.Controllers
   {
     private readonly IPropertyRepository _propertyRepository;
     private readonly IOwnerRepository _ownerRepository;
+    private readonly IPropertyImageRepository _propertyImageRepository;
+    private readonly IPropertyTraceRepository _propertyTraceRepository;
 
-    public PropertyController(IPropertyRepository propertyRepository, IOwnerRepository ownerRepository)
+    public PropertyController(
+        IPropertyRepository propertyRepository,
+        IOwnerRepository ownerRepository,
+        IPropertyImageRepository propertyImageRepository,
+        IPropertyTraceRepository propertyTraceRepository)
     {
       _propertyRepository = propertyRepository;
       _ownerRepository = ownerRepository;
+      _propertyImageRepository = propertyImageRepository;
+      _propertyTraceRepository = propertyTraceRepository;
     }
 
     /// <summary>
@@ -26,7 +34,27 @@ namespace ASP.MongoDb.API.Controllers
     {
       try
       {
-        var result = await _propertyRepository.SearchPropertiesAsync(filter);
+        var rawResult = await _propertyRepository.SearchPropertiesAsync(filter);
+
+        // Convert properties to DTOs
+        var propertyDtos = new List<PropertyDto>();
+        foreach (var property in rawResult.Properties)
+        {
+          var dto = await ConvertToDtoAsync(property);
+          propertyDtos.Add(dto);
+        }
+
+        var result = new PropertySearchResultDto
+        {
+          Properties = propertyDtos,
+          TotalCount = rawResult.TotalCount,
+          Page = rawResult.Page,
+          PageSize = rawResult.PageSize,
+          TotalPages = rawResult.TotalPages,
+          HasNextPage = rawResult.HasNextPage,
+          HasPreviousPage = rawResult.HasPreviousPage
+        };
+
         return Ok(result);
       }
       catch (Exception ex)
@@ -49,7 +77,7 @@ namespace ASP.MongoDb.API.Controllers
           return NotFound(new { message = "Property not found" });
         }
 
-        var propertyDto = ConvertToDto(property);
+        var propertyDto = await ConvertToDtoAsync(property);
         return Ok(propertyDto);
       }
       catch (Exception ex)
@@ -108,7 +136,7 @@ namespace ASP.MongoDb.API.Controllers
 
         // Get the created property with details
         var createdProperty = await _propertyRepository.GetPropertyWithDetailsAsync(property.Id);
-        var propertyDto = ConvertToDto(createdProperty!);
+        var propertyDto = await ConvertToDtoAsync(createdProperty!);
 
         return CreatedAtAction(nameof(GetPropertyById), new { id = property.Id }, propertyDto);
       }
@@ -205,7 +233,12 @@ namespace ASP.MongoDb.API.Controllers
       try
       {
         var properties = await _propertyRepository.GetPropertiesByOwnerAsync(ownerId);
-        var propertyDtos = properties.Select(ConvertToDto).ToList();
+        var propertyDtos = new List<PropertyDto>();
+        foreach (var property in properties)
+        {
+          var dto = await ConvertToDtoAsync(property);
+          propertyDtos.Add(dto);
+        }
         return Ok(propertyDtos);
       }
       catch (Exception ex)
@@ -230,7 +263,12 @@ namespace ASP.MongoDb.API.Controllers
         }
 
         var properties = await _propertyRepository.GetPropertiesByPriceRangeAsync(minPrice, maxPrice);
-        var propertyDtos = properties.Select(ConvertToDto).ToList();
+        var propertyDtos = new List<PropertyDto>();
+        foreach (var property in properties)
+        {
+          var dto = await ConvertToDtoAsync(property);
+          propertyDtos.Add(dto);
+        }
         return Ok(propertyDtos);
       }
       catch (Exception ex)
@@ -241,11 +279,15 @@ namespace ASP.MongoDb.API.Controllers
 
     #region Private Helper Methods
 
-    private PropertyDto ConvertToDto(Property property)
+    private async Task<PropertyDto> ConvertToDtoAsync(Property property)
     {
-      var mainImage = property.Images?.FirstOrDefault(i => i.IsMain && i.Enabled)?.Image
-                    ?? property.Images?.FirstOrDefault(i => i.Enabled)?.Image;
+      // Get all images for this property
+      var images = await _propertyImageRepository.GetEnabledByPropertyIdAsync(property.Id);
 
+      // Get all traces for this property
+      var traces = await _propertyTraceRepository.GetByPropertyIdAsync(property.Id);
+
+      // Get places (city, state, country)
       var city = property.Places?.FirstOrDefault(p => p.Name.Equals("City", StringComparison.OrdinalIgnoreCase))?.Value ?? "";
       var state = property.Places?.FirstOrDefault(p => p.Name.Equals("State", StringComparison.OrdinalIgnoreCase))?.Value ?? "";
       var country = property.Places?.FirstOrDefault(p => p.Name.Equals("Country", StringComparison.OrdinalIgnoreCase))?.Value ?? "";
@@ -256,13 +298,31 @@ namespace ASP.MongoDb.API.Controllers
         Name = property.Name,
         Address = property.Address,
         Price = property.Price,
-        IdOwner = property.IdOwner,
-        Image = mainImage,
+        Images = images.Select(img => new PropertyImageDto
+        {
+          IdPropertyImage = img.Id,
+          File = img.CloudinaryUrl,
+          Enabled = img.Enabled,
+          IsMain = img.IsMain,
+          Description = img.Description
+        }).ToList(),
+        Owner = new PropertyOwnerDto
+        {
+          Name = property.Owner?.FullName ?? "",
+          Photo = property.Owner?.Photo ?? "",
+          Phone = property.Owner?.Phone ?? "",
+          Email = property.Owner?.Email ?? ""
+        },
+        Traces = traces.Select(trace => new PropertyTraceDto
+        {
+          DateSale = trace.DateSale.ToString("yyyy-MM-dd"),
+          Name = trace.Name,
+          Value = trace.Value,
+          Tax = trace.Tax
+        }).ToList(),
         CodigoInternal = property.CodigoInternal,
         Year = property.Year,
         CreatedAt = property.CreatedAt,
-        OwnerName = property.Owner?.FullName ?? "",
-        OwnerPhone = property.Owner?.Phone ?? "",
         City = city,
         State = state,
         Country = country

@@ -1,5 +1,7 @@
 namespace ASP.MongoDb.API.DTOs
 {
+  using ASP.MongoDb.API.Entities;
+
   public class PropertyFilterDto
   {
     public string? Name { get; set; }
@@ -24,6 +26,17 @@ namespace ASP.MongoDb.API.DTOs
   public class PropertySearchResultDto
   {
     public List<PropertyDto> Properties { get; set; } = new();
+    public int TotalCount { get; set; }
+    public int Page { get; set; }
+    public int PageSize { get; set; }
+    public int TotalPages { get; set; }
+    public bool HasNextPage { get; set; }
+    public bool HasPreviousPage { get; set; }
+  }
+
+  public class PropertySearchResultRaw
+  {
+    public List<Property> Properties { get; set; } = new();
     public int TotalCount { get; set; }
     public int Page { get; set; }
     public int PageSize { get; set; }

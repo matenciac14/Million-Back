@@ -49,5 +49,8 @@ namespace ASP.MongoDb.API.Entities
 
     [BsonIgnore]
     public List<PropertyPlace> Places { get; set; } = new();
+
+    [BsonIgnore]
+    public List<PropertyTrace> Traces { get; set; } = new();
   }
 }

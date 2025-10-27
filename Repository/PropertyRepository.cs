@@ -23,7 +23,7 @@ namespace ASP.MongoDb.API.Repository
       _placeCollection = database.GetCollection<PropertyPlace>("PropertyPlace");
     }
 
-    public async Task<PropertySearchResultDto> SearchPropertiesAsync(PropertyFilterDto filter)
+    public async Task<PropertySearchResultRaw> SearchPropertiesAsync(PropertyFilterDto filter)
     {
       var filterBuilder = Builders<Property>.Filter;
       var filters = new List<FilterDefinition<Property>>();
@@ -106,9 +106,9 @@ namespace ASP.MongoDb.API.Repository
       }
 
       // Convert to DTOs
-      var propertyDtos = propertiesWithDetails.Select(ConvertToDto).ToList();
+      var propertyDtos = propertiesWithDetails;
 
-      return new PropertySearchResultDto
+      return new PropertySearchResultRaw
       {
         Properties = propertyDtos,
         TotalCount = (int)totalCount,
@@ -264,34 +264,6 @@ namespace ASP.MongoDb.API.Repository
 
         return cityMatch && stateMatch && countryMatch;
       }).ToList();
-    }
-
-    private PropertyDto ConvertToDto(Property property)
-    {
-      var mainImage = property.Images?.FirstOrDefault(i => i.IsMain && i.Enabled)?.Image
-                    ?? property.Images?.FirstOrDefault(i => i.Enabled)?.Image;
-
-      var city = property.Places?.FirstOrDefault(p => p.Name.Equals("City", StringComparison.OrdinalIgnoreCase))?.Value ?? "";
-      var state = property.Places?.FirstOrDefault(p => p.Name.Equals("State", StringComparison.OrdinalIgnoreCase))?.Value ?? "";
-      var country = property.Places?.FirstOrDefault(p => p.Name.Equals("Country", StringComparison.OrdinalIgnoreCase))?.Value ?? "";
-
-      return new PropertyDto
-      {
-        Id = property.Id,
-        Name = property.Name,
-        Address = property.Address,
-        Price = property.Price,
-        IdOwner = property.IdOwner,
-        Image = mainImage,
-        CodigoInternal = property.CodigoInternal,
-        Year = property.Year,
-        CreatedAt = property.CreatedAt,
-        OwnerName = property.Owner?.FullName ?? "",
-        OwnerPhone = property.Owner?.Phone ?? "",
-        City = city,
-        State = state,
-        Country = country
-      };
     }
 
     private SortDefinition<Property> GetSortDefinition(string? sortBy, string? sortDirection)

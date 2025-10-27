@@ -1,34 +1,76 @@
 <!-- @format -->
 
-# 🏠 Real Estate API - Backend
+# 🏠 Real Estate API - Sistema Inmobiliario Empresarial
 
-Una API completa para gestión de propiedades inmobiliarias construida con .NET 9, MongoDB y Cloudinary.
+[![.NET](https://img.shields.io/badge/.NET-9.0-purple.svg)](https://dotnet.microsoft.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-7.0-green.svg)](https://www.mongodb.com/)
+[![Cloudinary](https://img.shields.io/badge/Cloudinary-Images-blue.svg)](https://cloudinary.com/)
+[![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen.svg)]()
 
-## 🚀 Características
+## 📋 **Descripción del Sistema**
 
-- **CRUD completo** para propiedades y propietarios
-- **Filtros avanzados** con paginación
-- **Búsqueda** por múltiples criterios
-- **Gestión de imágenes** con Cloudinary (subida, optimización, eliminación)
-- **URLs responsivas** automáticas para diferentes dispositivos
-- **Arquitectura limpia** con Repository Pattern
-- **Validaciones robustas** y manejo de errores
-- **Documentación automática** con Swagger/OpenAPI
+**API REST empresarial completa** para gestión integral de propiedades inmobiliarias construida con **.NET 9**, **MongoDB** y **Cloudinary**. Sistema robusto que incluye gestión de propietarios, propiedades, imágenes optimizadas e historial completo de transacciones.
 
-## 🛠️ Tecnologías
+## 🚀 **Características Avanzadas**
 
-- **.NET 9** - Framework principal
-- **MongoDB** - Base de datos NoSQL
-- **Cloudinary** - Gestión de imágenes en la nube
-- **ASP.NET Core** - Web API
-- **NUnit** - Testing framework
-- **Swagger/OpenAPI** - Documentación de API
+### **🏠 Gestión de Propiedades**
 
-## 📋 Requisitos Previos
+- **CRUD completo** con validaciones empresariales
+- **Filtros avanzados** por precio, ciudad, propietario, año
+- **Búsqueda inteligente** con múltiples criterios
+- **Paginación optimizada** para grandes volúmenes
 
-- .NET 9 SDK
-- MongoDB Atlas account (o instancia local)
-- Cloudinary account
+### **📸 Sistema de Imágenes**
+
+- **Upload automático** a Cloudinary con organización por carpetas
+- **URLs responsivas** automáticas para múltiples dispositivos
+- **Optimización automática** de imágenes (WebP, compresión)
+- **Gestión por propiedad** con sistema de imagen principal
+
+### **📊 PropertyTrace (Historial)**
+
+- **Registro completo** de transacciones y ventas
+- **Historial de valuaciones** con fechas precisas
+- **Tracking de impuestos** y valores históricos
+- **Análisis de rentabilidad** y evolución de precios
+
+### **👤 Gestión de Propietarios**
+
+- **Información detallada** con validaciones
+- **Relaciones automáticas** con propiedades
+- **Contacto y datos personales** estructurados
+
+### **⚡ Arquitectura Empresarial**
+
+- **Repository Pattern** para escalabilidad
+- **Dependency Injection** configurado
+- **Async/Await** para alto rendimiento
+- **Error handling** robusto y consistente
+
+## 🛠️ **Stack Tecnológico**
+
+- **.NET 9** - Framework principal con ASP.NET Core
+- **MongoDB** - Base de datos NoSQL escalable
+- **Cloudinary** - CDN y gestión de imágenes en la nube
+- **Repository Pattern** - Arquitectura de acceso a datos
+- **Swagger/OpenAPI** - Documentación automática interactiva
+- **NUnit** - Framework de testing empresarial
+
+## 📋 **Requisitos del Sistema**
+
+### **Desarrollo**
+
+- **.NET 9 SDK** o superior
+- **MongoDB Atlas** account (recomendado) o instancia local
+- **Cloudinary** account con API keys
+- **IDE**: Visual Studio 2022 / VS Code / Rider
+
+### **Producción**
+
+- **Servidor**: Compatible con .NET 9 (Linux/Windows/Docker)
+- **Base de datos**: MongoDB Atlas (escalable)
+- **CDN**: Cloudinary (gestión de imágenes)
+- **SSL**: Certificado HTTPS requerido
 - Visual Studio Code o Visual Studio
 
 ## ⚙️ Configuración
@@ -97,7 +139,7 @@ La API estará disponible en:
 
 - **HTTP**: http://localhost:5179
 - **HTTPS**: https://localhost:7007
-- **Swagger UI**: https://localhost:7007/swagger
+- **Swagger UI**: https://localhost:7007/swagger (HTTPS) o http://localhost:5179/swagger (HTTP)
 
 ## 🧪 Testing
 

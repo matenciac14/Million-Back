@@ -13,6 +13,8 @@ namespace ASP.MongoDb.API.DTOs
 
     public string Phone { get; set; } = string.Empty;
 
+    public string Photo { get; set; } = string.Empty;
+
     public DateTime? Birthday { get; set; }
 
     public string Email { get; set; } = string.Empty;
@@ -31,6 +33,8 @@ namespace ASP.MongoDb.API.DTOs
 
     public string Phone { get; set; } = string.Empty;
 
+    public string Photo { get; set; } = string.Empty;
+
     public DateTime? Birthday { get; set; }
 
     [EmailAddress]
@@ -42,6 +46,9 @@ namespace ASP.MongoDb.API.DTOs
     public string? Name { get; set; }
     public string? LastName { get; set; }
     public string? Phone { get; set; }
+
+    public string? Photo { get; set; }
+
     public DateTime? Birthday { get; set; }
 
     [EmailAddress]

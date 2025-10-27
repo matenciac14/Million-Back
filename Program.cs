@@ -1,4 +1,3 @@
-using ASP.MongoDb.API.ProductRepository;
 using ASP.MongoDb.API.Repository;
 using ASP.MongoDb.API.Services;
 using DotNetEnv;
@@ -50,12 +49,11 @@ builder.Services.AddCors(options =>
 // Add the Repository Dependency Injection
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
-// Add Product Repository Dependency Injection (Legacy)
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
-
 // Add Real Estate Repository Dependency Injection
 builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
 builder.Services.AddScoped<IOwnerRepository, OwnerRepository>();
+builder.Services.AddScoped<IPropertyImageRepository, PropertyImageRepository>();
+builder.Services.AddScoped<IPropertyTraceRepository, PropertyTraceRepository>();
 
 // Add Image Service Dependency Injection
 builder.Services.AddScoped<IImageService, CloudinaryImageService>();
