@@ -1,10 +1,323 @@
 <!-- @format -->
 
-# 🚀 API Endpoints Documentation
+# 🚀 API Endpoints Guide - Sistema Completo
 
-## 📝 Complete Property Management System
+**Base URL**: `https://localhost:7007/api`
 
-### 👤 **OWNER ENDPOINTS**
+## 📋 **Resumen de Endpoints Disponibles**
+
+| Controlador | Endpoints | Descripción |
+|-------------|-----------|-------------|
+| **Property** | 8 endpoints | Gestión completa de propiedades |
+| **Owner** | 6 endpoints | Gestión de propietarios |
+| **PropertyTrace** | 6 endpoints | Historial de transacciones |
+| **Image** | 12 endpoints | Gestión de imágenes y Cloudinary |
+
+---
+
+## 🏠 **Property Controller** `/api/Property`
+
+### **GET Endpoints**
+```http
+GET /api/Property                    # Listar todas las propiedades (paginado)
+GET /api/Property/{id}               # Obtener propiedad por ID (con images, owner, traces)
+GET /api/Property/owner/{ownerId}    # Propiedades por propietario
+GET /api/Property/price-range        # Filtrar por rango de precio
+```
+
+### **POST Endpoints**
+```http
+POST /api/Property                   # Crear nueva propiedad
+```
+
+### **PUT Endpoints**
+```http
+PUT /api/Property/{id}               # Actualizar propiedad completa
+```
+
+### **DELETE Endpoints**
+```http
+DELETE /api/Property/{id}            # Eliminar propiedad (y dependencias)
+```
+
+### **Respuesta Completa de Property**
+```json
+{
+  "id": "671234567890abcdef123999",
+  "name": "Casa Moderna Premium",
+  "address": "Carrera 15 #93-45",
+  "price": 850000000,
+  "images": [
+    {
+      "idPropertyImage": "img_001",
+      "file": "https://res.cloudinary.com/demo/...",
+      "enabled": true,
+      "isMain": true,
+      "description": "Fachada principal"
+    }
+  ],
+  "owner": {
+    "name": "Juan Carlos Pérez García",
+    "photo": "https://res.cloudinary.com/...",
+    "phone": "+57 300 123 4567",
+    "email": "juan.perez@email.com"
+  },
+  "traces": [
+    {
+      "dateSale": "2024-01-15",
+      "name": "Venta inicial",
+      "value": 850000000,
+      "tax": 85000000
+    }
+  ],
+  "codigoInternal": "PROP_001",
+  "year": 2024,
+  "createdAt": "2025-10-27T15:30:00Z",
+  "city": "Bogotá",
+  "state": "Cundinamarca",
+  "country": "Colombia"
+}
+```
+
+---
+
+## � **Owner Controller** `/api/Owner`
+
+### **GET Endpoints**
+```http
+GET /api/Owner                       # Listar todos los propietarios
+GET /api/Owner/{id}                  # Obtener propietario por ID
+```
+
+### **POST Endpoints**
+```http
+POST /api/Owner                      # Crear nuevo propietario
+```
+
+### **PUT Endpoints**
+```http
+PUT /api/Owner/{id}                  # Actualizar propietario
+```
+
+### **DELETE Endpoints**
+```http
+DELETE /api/Owner/{id}               # Eliminar propietario
+```
+
+### **Ejemplo de Owner**
+```json
+{
+  "id": "671234567890abcdef123456",
+  "name": "Juan Carlos",
+  "lastName": "Pérez García",
+  "phone": "+57 300 123 4567",
+  "photo": "https://res.cloudinary.com/...",
+  "birthday": "1980-05-15",
+  "email": "juan.perez@email.com",
+  "fullName": "Juan Carlos Pérez García",
+  "createdAt": "2025-10-27T15:30:00Z"
+}
+```
+
+---
+
+## 📊 **PropertyTrace Controller** `/api/PropertyTrace`
+
+### **GET Endpoints**
+```http
+GET /api/PropertyTrace                     # Listar todos los traces
+GET /api/PropertyTrace/{id}                # Obtener trace por ID
+GET /api/PropertyTrace/property/{propertyId} # Traces de una propiedad
+```
+
+### **POST Endpoints**
+```http
+POST /api/PropertyTrace                    # Crear nuevo trace
+```
+
+### **PUT Endpoints**
+```http
+PUT /api/PropertyTrace/{id}                # Actualizar trace
+```
+
+### **DELETE Endpoints**
+```http
+DELETE /api/PropertyTrace/{id}             # Eliminar trace específico
+DELETE /api/PropertyTrace/property/{propertyId} # Eliminar todos los traces de una propiedad
+```
+
+### **Ejemplo de PropertyTrace**
+```json
+{
+  "id": "671234567890abcdef123789",
+  "idProperty": "671234567890abcdef123999",
+  "dateSale": "2024-01-15T00:00:00Z",
+  "name": "Venta inicial",
+  "value": 850000000,
+  "tax": 85000000,
+  "createdAt": "2025-10-27T15:30:00Z"
+}
+```
+
+---
+
+## 🖼️ **Image Controller** `/api/Image`
+
+### **Upload Endpoints**
+```http
+POST /api/Image/upload                     # Upload general (con/sin propertyId)
+POST /api/Image/upload-multiple           # Upload múltiples imágenes
+POST /api/Image/property/{propertyId}/upload # Upload específico para propiedad
+```
+
+### **Property Image Management**
+```http
+GET /api/Image/property/{propertyId}       # Obtener imágenes de propiedad
+PUT /api/Image/property/{propertyId}/main/{imageId} # Establecer imagen principal
+DELETE /api/Image/property/{propertyId}/image/{imageId} # Eliminar imagen específica
+GET /api/Image/property/{propertyId}/image/{imageId}/responsive # URLs responsivas
+```
+
+### **General Image Operations**
+```http
+DELETE /api/Image/{publicId}               # Eliminar imagen por publicId
+GET /api/Image/url/{publicId}             # Generar URL con transformaciones
+GET /api/Image/responsive/{publicId}       # URLs responsivas
+```
+
+### **Parámetros de Upload**
+```http
+POST /api/Image/upload
+Content-Type: multipart/form-data
+
+file: [archivo]
+propertyId: "671234..." (opcional)
+description: "Descripción" (opcional)
+isMain: true/false (opcional)
+folder: "custom-folder" (opcional)
+```
+
+### **Respuesta de Upload**
+```json
+{
+  "id": "img_123456",
+  "propertyId": "671234567890abcdef123999",
+  "publicId": "real-estate/properties/imagen_abc123",
+  "url": "https://res.cloudinary.com/miguedev/image/upload/v1234567890/...",
+  "width": 1920,
+  "height": 1080,
+  "format": "jpg",
+  "bytes": 245678,
+  "description": "Fachada principal",
+  "isMain": true,
+  "enabled": true,
+  "createdAt": "2025-10-27T15:30:00Z"
+}
+```
+
+---
+
+## � **Ejemplos de Uso Completo**
+
+### **1. Crear Propietario con Foto**
+```bash
+# 1. Crear propietario
+curl -k -X POST https://localhost:7007/api/Owner \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "María Elena",
+    "lastName": "González Ruiz",
+    "phone": "+57 315 555 1234",
+    "email": "maria.gonzalez@email.com",
+    "birthday": "1985-03-20"
+  }'
+
+# 2. Subir foto del propietario (usar ID del paso 1)
+curl -k -X POST https://localhost:7007/api/Image/upload \
+  -F "file=@owner-photo.jpg" \
+  -F "folder=owners"
+```
+
+### **2. Crear Propiedad Completa**
+```bash
+# 1. Crear propiedad
+curl -k -X POST https://localhost:7007/api/Property \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Apartamento Lujoso Centro",
+    "address": "Carrera 11 #85-32, Zona Rosa",
+    "price": 580000000,
+    "codigoInternal": "APART_001",
+    "year": 2023,
+    "city": "Bogotá",
+    "state": "Cundinamarca",
+    "country": "Colombia",
+    "idOwner": "OWNER_ID_DEL_PASO_ANTERIOR"
+  }'
+
+# 2. Subir imágenes de la propiedad
+curl -k -X POST https://localhost:7007/api/Image/property/PROPERTY_ID/upload \
+  -F "file=@fachada.jpg" \
+  -F "description=Fachada del edificio" \
+  -F "isMain=true"
+
+curl -k -X POST https://localhost:7007/api/Image/property/PROPERTY_ID/upload \
+  -F "file=@sala.jpg" \
+  -F "description=Sala de estar" \
+  -F "isMain=false"
+
+# 3. Agregar historial de transacciones
+curl -k -X POST https://localhost:7007/api/PropertyTrace \
+  -H "Content-Type: application/json" \
+  -d '{
+    "idProperty": "PROPERTY_ID",
+    "dateSale": "2024-01-15",
+    "name": "Venta inicial",
+    "value": 580000000,
+    "tax": 58000000
+  }'
+```
+
+### **3. Obtener Propiedad Completa**
+```bash
+curl -k -X GET https://localhost:7007/api/Property/PROPERTY_ID
+```
+
+---
+
+## ⚡ **Características Importantes**
+
+### **🔗 Relaciones Automáticas**
+- Al obtener una Property, automáticamente incluye Owner, Images y Traces
+- Al eliminar una Property, se eliminan automáticamente sus Images y Traces relacionados
+
+### **🖼️ Integración con Cloudinary**
+- Upload automático a Cloudinary con URLs optimizadas
+- Generación de URLs responsivas (thumbnail, small, medium, large)
+- Eliminación automática de Cloudinary al eliminar de DB
+
+### **📄 Paginación**
+- GET /api/Property soporta paginación: `?page=1&pageSize=10`
+- Respuesta incluye: `totalCount`, `totalPages`, `hasNextPage`, `hasPreviousPage`
+
+### **🔍 Filtros Avanzados**
+- Búsqueda por propietario: `/api/Property/owner/{ownerId}`
+- Filtro por precio: `/api/Property/price-range?minPrice=100000&maxPrice=500000`
+
+---
+
+## 🎯 **Estado Actual del Sistema**
+
+✅ **Sistema Completamente Funcional**
+- 4 Controladores operativos
+- 32 Endpoints totales
+- Base de datos limpia y lista para usar
+- Integración completa con Cloudinary
+- Documentación completa actualizada
+- Repository Pattern implementado
+- DTOs optimizados para Frontend
+
+🚀 **Listo para Producción**
 
 #### Create Owner
 
